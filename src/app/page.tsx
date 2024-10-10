@@ -1,101 +1,239 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { ArrowDownIcon, Settings, Info, Wallet } from 'lucide-react'
+import TokenSelectorDialog from '@/components/TokenSelectorDialog'
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+const TokenButton = ({ token, balance, onClick }) => (
+  <button
+    onClick={onClick}
+    className="flex items-center justify-between w-full p-4 text-left transition-colors rounded-lg hover:bg-accent"
+  >
+    <div className="flex items-center">
+      <div className="w-8 h-8 mr-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"></div>
+      <div>
+        <div className="font-semibold">{token}</div>
+        <div className="text-sm text-muted-foreground">Balance: {balance}</div>
+      </div>
     </div>
-  );
+    <ArrowDownIcon className="w-4 h-4 text-muted-foreground" />
+  </button>
+)
+
+export default function Component() {
+  const [inputToken, setInputToken] = useState('ETH')
+  const [outputToken, setOutputToken] = useState('USDC')
+  const [inputAmount, setInputAmount] = useState('')
+  const [outputAmount, setOutputAmount] = useState('')
+  const [slippageTolerance, setSlippageTolerance] = useState(0.5)
+  const [transactionDeadline, setTransactionDeadline] = useState(20)
+  const [walletConnected, setWalletConnected] = useState(false)
+
+  const handleInputChange = (value: string) => {
+    setInputAmount(value)
+    setOutputAmount((parseFloat(value) * 1800).toFixed(2))
+  }
+
+  const availableTokens = [
+    { name: 'ETH', balance: '1.5' },
+    { name: 'BTC', balance: '0.5' },
+    { name: 'USDC', balance: '1000' },
+  ]
+
+  const handleSwap = () => {
+    console.log('Swap confirmed')
+  }
+
+  return (
+    // add margin top
+    <div className="max-w-md mt-10 mx-auto p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl shadow-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">Swap</h1>
+        <div className="flex items-center space-x-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-blue-500 hover:text-purple-500 transition-colors">
+                  <Info className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Trade tokens in an instant</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-blue-500 hover:text-purple-500 transition-colors">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Advanced Settings</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="slippage" className="text-right">
+                    Slippage tolerance
+                  </Label>
+                  <Input
+                    id="slippage"
+                    type="number"
+                    value={slippageTolerance}
+                    onChange={(e) => setSlippageTolerance(parseFloat(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="deadline" className="text-right">
+                    Transaction deadline
+                  </Label>
+                  <Input
+                    id="deadline"
+                    type="number"
+                    value={transactionDeadline}
+                    onChange={(e) => setTransactionDeadline(parseInt(e.target.value))}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="p-4 bg-white bg-opacity-50 rounded-xl backdrop-blur-sm">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm text-muted-foreground">You pay</span>
+          </div>
+          <Input
+            type="number"
+            value={inputAmount}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder="0.0"
+            className="border-none text-2xl bg-transparent"
+          />
+          {/*   <Dialog>
+            <DialogTrigger asChild>
+              <TokenButton token={inputToken} balance="1.5" onClick={() => {}} />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Select a token</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <TokenButton token="ETH" balance="1.5" onClick={() => setInputToken('ETH')} />
+                <TokenButton token="BTC" balance="0.5" onClick={() => setInputToken('BTC')} />
+                <TokenButton token="USDC" balance="1000" onClick={() => setInputToken('USDC')} />
+              </div>
+            </DialogContent>
+          </Dialog> */}
+          <TokenSelectorDialog
+            selectedToken={{ name: inputToken, balance: '1.5' }}
+            onSelectToken={(token) => setInputToken(token.name)}
+            availableTokens={availableTokens}
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <Button variant="ghost" size="icon" className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md hover:shadow-lg transition-all">
+            <ArrowDownIcon className="h-6 w-6" />
+          </Button>
+        </div>
+
+        <div className="p-4 bg-white bg-opacity-50 rounded-xl backdrop-blur-sm">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm text-muted-foreground">You receive</span>
+          </div>
+          <Input
+            type="number"
+            value={outputAmount}
+            readOnly
+            placeholder="0.0"
+            className="border-none text-2xl bg-transparent"
+          />
+          {/* <Dialog>
+            <DialogTrigger asChild>
+              <TokenButton token={outputToken} balance="1000" onClick={() => {}} />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Select a token</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <TokenButton token="ETH" balance="1.5" onClick={() => setOutputToken('ETH')} />
+                <TokenButton token="BTC" balance="0.5" onClick={() => setOutputToken('BTC')} />
+                <TokenButton token="USDC" balance="1000" onClick={() => setOutputToken('USDC')} />
+              </div>
+            </DialogContent>
+          </Dialog> */}
+          <TokenSelectorDialog
+            selectedToken={{ name: outputToken, balance: '1000' }}
+            onSelectToken={(token) => setOutputToken(token.name)}
+            availableTokens={availableTokens}
+          />
+        </div>
+      </div>
+
+      <div className="mt-6 space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Exchange rate</span>
+          <span>1 {inputToken} = 1800 {outputToken}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Network fee</span>
+          <span>~$5.00</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-help text-muted-foreground">Route</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Best route for your trade</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <span>{inputToken} → Uniswap V3 → {outputToken}</span>
+        </div>
+      </div>
+
+      {walletConnected ? (
+        <Button
+          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+          onClick={handleSwap}
+          disabled={!inputAmount}
+        >
+          Swap
+        </Button>
+      ) : (
+        <Button
+          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+          onClick={() => setWalletConnected(true)}
+        >
+          <Wallet className="mr-2 h-5 w-5" /> Connect Wallet
+        </Button>
+      )}
+    </div>
+  )
 }
