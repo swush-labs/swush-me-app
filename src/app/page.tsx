@@ -17,25 +17,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { ArrowDownIcon, Settings, Info, Wallet } from 'lucide-react'
 import TokenSelectorDialog from '@/components/TokenSelectorDialog'
 
-const TokenButton = ({ token, balance, onClick }) => (
-  <button
-    onClick={onClick}
-    className="flex items-center justify-between w-full p-4 text-left transition-colors rounded-lg hover:bg-accent"
-  >
-    <div className="flex items-center">
-      <div className="w-8 h-8 mr-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500"></div>
-      <div>
-        <div className="font-semibold">{token}</div>
-        <div className="text-sm text-muted-foreground">Balance: {balance}</div>
-      </div>
-    </div>
-    <ArrowDownIcon className="w-4 h-4 text-muted-foreground" />
-  </button>
-)
+
 
 export default function Component() {
   const [inputToken, setInputToken] = useState('ETH')
@@ -132,21 +117,6 @@ export default function Component() {
             placeholder="0.0"
             className="border-none text-2xl bg-transparent"
           />
-          {/*   <Dialog>
-            <DialogTrigger asChild>
-              <TokenButton token={inputToken} balance="1.5" onClick={() => {}} />
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Select a token</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <TokenButton token="ETH" balance="1.5" onClick={() => setInputToken('ETH')} />
-                <TokenButton token="BTC" balance="0.5" onClick={() => setInputToken('BTC')} />
-                <TokenButton token="USDC" balance="1000" onClick={() => setInputToken('USDC')} />
-              </div>
-            </DialogContent>
-          </Dialog> */}
           <TokenSelectorDialog
             selectedToken={{ name: inputToken, balance: '1.5' }}
             onSelectToken={(token) => setInputToken(token.name)}
@@ -171,21 +141,6 @@ export default function Component() {
             placeholder="0.0"
             className="border-none text-2xl bg-transparent"
           />
-          {/* <Dialog>
-            <DialogTrigger asChild>
-              <TokenButton token={outputToken} balance="1000" onClick={() => {}} />
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Select a token</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <TokenButton token="ETH" balance="1.5" onClick={() => setOutputToken('ETH')} />
-                <TokenButton token="BTC" balance="0.5" onClick={() => setOutputToken('BTC')} />
-                <TokenButton token="USDC" balance="1000" onClick={() => setOutputToken('USDC')} />
-              </div>
-            </DialogContent>
-          </Dialog> */}
           <TokenSelectorDialog
             selectedToken={{ name: outputToken, balance: '1000' }}
             onSelectToken={(token) => setOutputToken(token.name)}

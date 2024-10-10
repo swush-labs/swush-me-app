@@ -20,8 +20,8 @@ interface TokenSelectorDialogProps {
   availableTokens: Token[]
 }
 
-const TokenButton = ({ token, balance, onClick }) => (
-  <button
+const TokenButton = ({ token, balance, onClick }: { token: string; balance: string; onClick: () => void }) => (
+    <button
     onClick={onClick}
     className="flex items-center justify-between w-full p-4 text-left transition-colors rounded-lg hover:bg-accent"
   >
