@@ -172,7 +172,7 @@ export default function Component() {
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        <span>{inputToken} → Uniswap V3 → {outputToken}</span>
+                        <span>{inputToken} → Hydration → {outputToken}</span>
                     </div>
                 </div>
 
