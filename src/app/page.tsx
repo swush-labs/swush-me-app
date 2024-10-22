@@ -20,8 +20,8 @@ import { ArrowDownIcon, Settings, Info, Wallet } from 'lucide-react'
 import TokenSelectorDialog from '@/components/TokenSelectorDialog'
 
 const availableTokens = [
-    { name: 'ETH', balance: '1.5' },
-    { name: 'BTC', balance: '0.5' },
+    { name: 'DOT', balance: '1.5' },
+    { name: 'HDX', balance: '0.5' },
     { name: 'USDC', balance: '1000' },
 ]
 
