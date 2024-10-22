@@ -26,7 +26,7 @@ const availableTokens = [
 ]
 
 export default function Component() {
-    const [inputToken, setInputToken] = useState('ETH')
+    const [inputToken, setInputToken] = useState('DOT')
     const [outputToken, setOutputToken] = useState('USDC')
     const [inputAmount, setInputAmount] = useState('')
     const [outputAmount, setOutputAmount] = useState('')
