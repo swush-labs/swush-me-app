@@ -16,8 +16,9 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Label } from "@/components/ui/label"
-import { ArrowDownIcon, Settings, Info, Wallet } from 'lucide-react'
+import { ArrowDownIcon, Settings, Info, Wallet, Moon, Sun } from 'lucide-react'
 import TokenSelectorDialog from '@/components/TokenSelectorDialog'
+import { useTheme } from 'next-themes'
 
 const availableTokens = [
     { name: 'DOT', balance: '1.5' },
@@ -33,6 +34,7 @@ export default function Component() {
     const [slippageTolerance, setSlippageTolerance] = useState(0.5)
     const [transactionDeadline, setTransactionDeadline] = useState(20)
     const [walletConnected, setWalletConnected] = useState(false)
+    const { theme, setTheme } = useTheme()
 
     const handleInputChange = (value: string) => {
         setInputAmount(value)
@@ -44,14 +46,26 @@ export default function Component() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Background animation */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute left-1/4 top-1/4 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                <div className="absolute right-1/4 bottom-1/4 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-                <div className="absolute left-1/3 bottom-1/3 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                <div className="absolute left-1/4 top-1/4 w-64 h-64 bg-blue-200 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob"></div>
+                <div className="absolute right-1/4 bottom-1/4 w-64 h-64 bg-purple-200 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                <div className="absolute left-1/3 bottom-1/3 w-64 h-64 bg-pink-200 dark:bg-pink-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
             </div>
 
-            <div className="max-w-md w-full bg-white bg-opacity-80 backdrop-blur-lg rounded-3xl shadow-lg p-8 space-y-6 relative z-10">
+            {/* Theme toggle button */}
+            <Button
+                variant="outline"
+                size="icon"
+                className="absolute top-4 left-4 bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-full"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+
+            {/* Main swap container */}
+            <div className="max-w-md w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-lg dark:shadow-2xl p-8 space-y-6 relative z-10 border border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">Swap</h1>
                     <div className="flex items-center space-x-2">
@@ -109,16 +123,16 @@ export default function Component() {
                 </div>
 
                 <div className="space-y-4">
-                    <div className="p-4 bg-white bg-opacity-50 rounded-xl backdrop-blur-sm shadow-md">
+                    <div className="p-4 bg-white bg-opacity-50 dark:bg-gray-700/50 rounded-xl backdrop-blur-sm shadow-md">
                         <div className="flex justify-between mb-2">
-                            <span className="text-sm text-muted-foreground">You pay</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">You pay</span>
                         </div>
                         <Input
                             type="number"
                             value={inputAmount}
                             onChange={(e) => handleInputChange(e.target.value)}
                             placeholder="0.0"
-                            className="border-none text-2xl bg-transparent"
+                            className="border-none text-2xl bg-transparent text-gray-800 dark:text-gray-200"
                         />
                         <TokenSelectorDialog
                             selectedToken={{ name: inputToken, balance: '1.5' }}
@@ -133,16 +147,16 @@ export default function Component() {
                         </Button>
                     </div>
 
-                    <div className="p-4 bg-white bg-opacity-50 rounded-xl backdrop-blur-sm shadow-md">
+                    <div className="p-4 bg-white bg-opacity-50  dark:bg-gray-700/50 rounded-xl backdrop-blur-sm shadow-md">
                         <div className="flex justify-between mb-2">
-                            <span className="text-sm text-muted-foreground">You receive</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">You receive</span>
                         </div>
                         <Input
                             type="number"
                             value={outputAmount}
                             readOnly
                             placeholder="0.0"
-                            className="border-none text-2xl bg-transparent"
+                            className="border-none text-2xl bg-transparent text-gray-800 dark:text-gray-200"
                         />
                         <TokenSelectorDialog
                             selectedToken={{ name: outputToken, balance: '1000' }}
@@ -152,20 +166,20 @@ export default function Component() {
                     </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 dark:text-gray-300">
                     <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Exchange rate</span>
+                        <span className="text-gray-500 dark:text-gray-400">Exchange rate</span>
                         <span>1 {inputToken} = 1800 {outputToken}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Network fee</span>
+                        <span className="text-gray-500 dark:text-gray-400">Network fee</span>
                         <span>~$5.00</span>
                     </div>
                     <div className="flex justify-between text-sm">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <span className="cursor-help text-muted-foreground">Route</span>
+                                    <span className="cursor-help text-gray-500 dark:text-gray-400">Route</span>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>Best route for your trade</p>
